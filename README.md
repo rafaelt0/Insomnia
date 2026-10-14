@@ -41,6 +41,10 @@
 
 ## Install
 
+The native Linux port is in [`linux/`](linux/README.md). It has a tray, timed
+sessions, lid actions, battery floors, and a CLI. See its guide for installation,
+desktop requirements, and differences from the macOS app.
+
 Requires macOS 26 or later on an Apple Silicon Mac.
 
 Paste this into your coding agent:
