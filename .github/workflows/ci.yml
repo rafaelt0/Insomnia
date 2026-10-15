@@ -22,16 +22,16 @@ jobs:
   linux:
     name: Linux test, lint, and release build
     runs-on: ubuntu-24.04
+    # Ubuntu 24.04 does not package gtk4-layer-shell; Arch does, with a current Rust.
+    container: archlinux:latest
     timeout-minutes: 30
     steps:
+      - name: Install native dependencies
+        run: pacman -Syu --noconfirm --needed base-devel rust gtk4 gtk4-layer-shell dbus shellcheck desktop-file-utils
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Install native dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-4-dev libgtk4-layer-shell-dev pkg-config dbus shellcheck desktop-file-utils
       - name: Record toolchain and library versions
         run: |
           rustc --version
@@ -41,8 +41,8 @@ jobs:
         run: |
           cargo test --locked --manifest-path linux/Cargo.toml
           cargo clippy --locked --manifest-path linux/Cargo.toml --all-targets -- -D warnings
-          bash -n linux/install.sh linux/uninstall.sh linux/tests/e2e.sh
-          shellcheck linux/install.sh linux/uninstall.sh linux/tests/e2e.sh
+          bash -n linux/install.sh linux/uninstall.sh linux/tests/e2e.sh linux/tests/prompt.sh
+          shellcheck linux/install.sh linux/uninstall.sh linux/tests/e2e.sh linux/tests/prompt.sh
           desktop-file-validate linux/packaging/insomnia.desktop
       - name: Build release
         run: cargo build --release --locked --manifest-path linux/Cargo.toml
